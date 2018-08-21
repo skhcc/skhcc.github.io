@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="A layout example that shows off a responsive product landing page.">
+    <title>職志內部:提醒同工出席</title>
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-" crossorigin="anonymous">
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-old-ie-min.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+    <!--<![endif]-->
+    
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="css/marketing-old-ie.css">
+    <![endif]-->
+    <!--[if gt IE 8]><!-->
+        <link rel="stylesheet" href="css/marketing.css">
+    <!--<![endif]-->
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
+    <script src="js/script.js"></script>
+    <script src="js/airtable.browser.js"></script>
+    <script>
+        var id = getAllUrlParams().id;
+        var Airtable = require('airtable');
+        var base = new Airtable({ apiKey: 'keyZG7bCtLzdH8q6t' }).base('applE6AD7ol0u6YGk');
+        base('活動').find(id, function (err, record) {
+            if (err) { console.error(err); return; }
+            var manpowers = record.fields.人手名稱.split(',');
+            var phones = record.fields.人手電話.split(',');
+            var d = new Date(record.fields.日期);
+            document.getElementById("whatsappContent").innerHTML =
+                "活動：" + record.fields.活動 + "\n" +
+                "學校：" + record.fields.學校名稱 + "\n" +
+                "地址：" + record.fields.學校地址 + "\n" +
+                "日期：" + d.getFullYear() + "年" + (d.getMonth()+1) + "月"+ d.getDate() + "日(星期" + d.getDay() + ")\n" +
+                "開始：" + String(record.fields.開始).toHHMM() + "\n" +
+                "結束：" + String(record.fields.結束).toHHMM() + "\n" +
+                "集合：" + String(record.fields.開始 - 1200).toHHMM() + "於學校禮堂" + "\n" + "\n" +
+                "提一提大家即將有活動，記得準時出席呀。";
+            for (var i = 0; i < manpowers.length; i++) {
+                if (phones[i].length > 0) { 
+                document.getElementById("sendWhatsapp").innerHTML +=
+                   "<li class='pure-menu-item'><a href='javascript:sendWhatsapp(852" + phones[i] + ")' class='pure-menu-link'>" + manpowers[i] + "</a></li>";
+                }
+            document.getElementById("emailAddresses").innerHTML = record.fields.同工電郵;
+            document.getElementById("emailTitle").innerHTML = "[活動提醒]" + record.fields.活動 + ":" + record.fields.學校名稱 + "(" + d.getDate() + "/" + (d.getMonth()+1) + " " + String(record.fields.開始 - 1200).toHHMM() + "集合)";
+            document.getElementById("emailContent").innerHTML =
+                record.fields.人手名稱 + "：" + "\n" + "\n" +
+                "以下活動即將舉行，有動大家準時出席。" + "\n" + "\n" +
+                "活動：" + record.fields.活動 + "\n" +
+                "學校：" + record.fields.學校名稱 + "\n" +
+                "地址：" + record.fields.學校地址 + "\n" +
+                "日期：" + d.getFullYear() + "年" + (d.getMonth()+1) + "月"+ d.getDate() + "日(星期" + d.getDay() + ")\n" +
+                "開始：" + String(record.fields.開始).toHHMM() + "\n" +
+                "結束：" + String(record.fields.結束).toHHMM() + "\n" +
+                "集合：" + String(record.fields.開始 - 1200).toHHMM() + "於學校禮堂" + "\n" + "\n" +
+                "附上分工分組表以及學生成績，讓大家先作預備及參考。";
+                ;
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="header">
+        <div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
+            <a class="pure-menu-heading" href="">職志內部:提醒同工出席</a>
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="content">
+            <div class="pure-g">
+                    
+                <div class="l-box-lrg pure-u-1 pure-u-md-2-5">
+                    <form class="pure-form pure-form-stacked">
+                        <fieldset>
+                            <h4>Whatsapp內容</h4>
+                            <textarea id="whatsappContent" placeholder="截入中..."></textarea>
+                            <h4>Whatsapp傳送</h4>
+                            <ul id="sendWhatsapp" class="pure-menu-list"></ul>
+                        </fieldset>
+                    </form>
+                </div>
+                <div class="l-box-lrg pure-u-1 pure-u-md-3-5">
+                    <form class="pure-form pure-form-stacked">
+                        <fieldset>
+                            <h4>電郵收件人 <a href="javascript:copy('emailAddresses')">[複製]</a></h4>
+                            <textarea id="emailAddresses" style="height:50px" placeholder="截入中..."></textarea>
+                            <h4>電郵標題 <a href="javascript:copy('emailTitle')">[複製]</a></h4>
+                            <textarea id="emailTitle" style="height:50px" placeholder="截入中..."></textarea>
+                            <h4>電郵內容 <a href="javascript:copy('emailContent')">[複製]</a></h4>
+                            <textarea id="emailContent" placeholder="截入中..."></textarea>
+                            
+                        </fieldset>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
