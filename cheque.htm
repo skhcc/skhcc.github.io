@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>職志內部:提醒同工出席</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/siimple@3.1.1/dist/siimple.min.css">
+
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+  <script src="js/remind.js"></script>
+  <script src="js/airtable.browser.js"></script>
+
+
+
+  <script>
+
+    var startRange = Date();
+    var endRange = Date();
+
+    function runMe() {
+
+
+      var type = ['收費', '民政', '取消', '錯誤'];
+      var names = [];
+      var count = [[], [], [], []];
+
+      var Airtable = require('airtable');
+      var base = new Airtable({ apiKey: 'keyZG7bCtLzdH8q6t' }).base('applE6AD7ol0u6YGk');
+
+      base('同工').select({
+        view: '支票'
+      }).firstPage(function (err, records) {
+        if (err) { console.error(err); return; }
+        records.forEach(function (record) {
+
+          var name = record.get('同工');
+          names.push(name);
+
+          var workingMonth = record.get('出席日期');
+          if (workingMonth == undefined) {
+            workingMonth = "";
+          }
+
+          var workingFund = record.get('資金來源');
+
+          for (var i = 0; i < type.length; i++) {
+            var counter = 0;
+            for (var j = 0; j < workingMonth.length; j++) {
+              if (Date.parse(workingMonth[j]) >= startRange && Date.parse(workingMonth[j]) <= endRange && workingFund[j] == type[i]) {
+                counter++;
+              }
+            }
+            count[i].push(counter);
+          }
+        });
+
+        for (var j = 0; j < type.length; j++) {
+          var myTable = document.getElementById('myTable' + j);
+          while (myTable.firstChild) {
+            myTable.removeChild(myTable.firstChild);
+          }
+
+
+          for (var i = 0; i < names.length; i++) {
+            if (count[j][i] == 0) {
+            } else {
+              myTable.innerHTML += '<div class="siimple-table-row"><div class="siimple-table-cell">' + names[i] + '</div><div class="siimple-table-cell">' + count[j][i] + '</div></div>';
+            }
+          }
+
+        }
+
+      });
+    };
+  </script>
+
+  <script>
+    $(function () {
+      $('input[name="daterange"]').daterangepicker({
+        "locale": {
+          "format": "DD/MM/YYYY"
+        },
+        opens: 'center'
+      }, function (start, end, label) {
+        console.log("A new date selection was made: " + start.format('YYYY-MM-DD') + ' to ' + end.format('YYYY-MM-DD'));
+        startRange = start;
+        endRange = end;
+        runMe();
+      });
+    });
+  </script>
+
+</head>
+
+<body onload="runMe()">
+
+  <div class="siimple-navbar siimple-navbar--extra-large siimple-navbar--primary">
+    <div class="siimple-navbar-title">導師費用申請</div>
+  </div>
+
+
+  <div class="siimple-content siimple-content--extra-large">
+
+    <div class="siimple-grid">
+      <div class="siimple-grid-row">
+        <div class="siimple-grid-col siimple-grid-col--6">
+          <div class="siimple-field-label">日期範圍</div>
+          <div class="siimple-field">
+            <input type="text" class="siimple-input siimple-input--fluid" name="daterange" value="" />
+          </div>
+        </div>
+      </div>
+      <div class="siimple-grid-row">
+        <div class="siimple-grid-col siimple-grid-col--3">
+          <div class="siimple-table siimple-table--striped">
+            <div class="siimple-table-header">
+              <div class="siimple-table-row">
+                <div class="siimple-table-cell">姓名</div>
+                <div class="siimple-table-cell">收費</div>
+              </div>
+            </div>
+            <div class="siimple-table-body" id="myTable0">
+            </div>
+          </div>
+        </div>
+        <div class="siimple-grid-col siimple-grid-col--3">
+          <div class="siimple-table siimple-table--striped">
+            <div class="siimple-table-header">
+              <div class="siimple-table-row">
+                <div class="siimple-table-cell">姓名</div>
+                <div class="siimple-table-cell">民政</div>
+              </div>
+            </div>
+            <div class="siimple-table-body" id="myTable1">
+            </div>
+          </div>
+        </div>
+        <div class="siimple-grid-col siimple-grid-col--3">
+          <div class="siimple-table siimple-table--striped">
+            <div class="siimple-table-header">
+              <div class="siimple-table-row">
+                <div class="siimple-table-cell">姓名</div>
+                <div class="siimple-table-cell">取消</div>
+              </div>
+            </div>
+            <div class="siimple-table-body" id="myTable2">
+            </div>
+          </div>
+        </div>
+        <div class="siimple-grid-col siimple-grid-col--3">
+          <div class="siimple-table siimple-table--striped">
+            <div class="siimple-table-header">
+              <div class="siimple-table-row">
+                <div class="siimple-table-cell">姓名</div>
+                <div class="siimple-table-cell">錯誤</div>
+              </div>
+            </div>
+            <div class="siimple-table-body" id="myTable3">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
