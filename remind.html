@@ -29,7 +29,7 @@
         base('活動').find(id, function (err, record) {
             if (err) { console.error(err); return; }
             var manpowers = record.fields.人手名稱.split(',');
-            manpowers.append(record.fields.人手名稱FL.split(','));
+            manpowers += record.fields.人手名稱FL.split(',');
             var phones = record.fields.人手電話.split(',');
             phones += record.fields.人手電話FL.split(',');
             var d = new Date(record.fields.日期);
