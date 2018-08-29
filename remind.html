@@ -14,23 +14,26 @@
     <!--<![endif]-->
     
     <!--[if lte IE 8]>
-        <link rel="stylesheet" href="css/marketing-old-ie.css">
+        <link rel="stylesheet" href="https://skhcc.github.io/css/marketing-old-ie.css">
     <![endif]-->
     <!--[if gt IE 8]><!-->
-        <link rel="stylesheet" href="css/remind.css">
+        <link rel="stylesheet" href="https://skhcc.github.io/css/remind.css">
     <!--<![endif]-->
     <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
-    <script src="js/remind.js"></script>
-    <script src="js/airtable.browser.js"></script>
+    <script src="https://skhcc.github.io/js/remind.js"></script>
+    <script src="https://skhcc.github.io/js/airtable.browser.js"></script>
     <script>
         var id = getAllUrlParams().id;
         var Airtable = require('airtable');
         var base = new Airtable({ apiKey: 'keyZG7bCtLzdH8q6t' }).base('applE6AD7ol0u6YGk');
         base('活動').find(id, function (err, record) {
             if (err) { console.error(err); return; }
-            var manpowers = record.fields.人手名稱.split(',');
-            manpowers += record.fields.人手名稱FL.split(',');
-            var phones = record.fields.人手電話.split(',');
+            var manpowers1 = record.fields.人手名稱.split(',');
+            var manpowers2 = record.fields.人手名稱FL.split(',');
+            var manpowers = manpowers1.concat(manpowers2);
+            var phones1 = record.fields.人手電話.split(',');
+            var phones2 = record.fields.人手電話FL.split(',');
+            var phones = phones1.concat(phones2);
             var d = new Date(record.fields.日期);
             document.getElementById("whatsappContent").innerHTML =
                 "活動：" + record.fields.活動 + "\n" +
@@ -46,10 +49,13 @@
                 document.getElementById("sendWhatsapp").innerHTML +=
                    "<li class='pure-menu-item'><a href='javascript:sendWhatsapp(852" + phones[i] + ")' class='pure-menu-link'>" + manpowers[i] + "</a></li>";
                 }
-            document.getElementById("emailAddresses").innerHTML = record.fields.同工電郵 + "," + record.fields.同工電郵FL;
+            var emails1 = record.fields.同工電郵.split(',');
+            var emails2 = record.fields.同工電郵FL.split(',');
+            var emails = emails1.concat(emails2);
+            document.getElementById("emailAddresses").innerHTML = emails.join(', ');
             document.getElementById("emailTitle").innerHTML = "[活動提醒]" + record.fields.活動 + ":" + record.fields.學校名稱 + "(" + d.getDate() + "/" + (d.getMonth()+1) + " " + String(record.fields.開始 - 1200).toHHMM() + "集合)";
             document.getElementById("emailContent").innerHTML =
-                record.fields.人手名稱 + "：" + "\n" + "\n" +
+                manpowers.join(', ') + "：" + "\n" + "\n" +
                 "以下活動即將舉行，有勞大家準時出席。" + "\n" + "\n" +
                 "活動：" + record.fields.活動 + "\n" +
                 "學校：" + record.fields.學校名稱 + "\n" +
