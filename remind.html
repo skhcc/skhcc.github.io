@@ -29,7 +29,9 @@
         base('活動').find(id, function (err, record) {
             if (err) { console.error(err); return; }
             var manpowers = record.fields.人手名稱.split(',');
+            manpowers += record.fields.人手名稱FL.split(',');
             var phones = record.fields.人手電話.split(',');
+            phones += record.fields.人手電話FL.split(',');
             var d = new Date(record.fields.日期);
             document.getElementById("whatsappContent").innerHTML =
                 "活動：" + record.fields.活動 + "\n" +
@@ -45,7 +47,7 @@
                 document.getElementById("sendWhatsapp").innerHTML +=
                    "<li class='pure-menu-item'><a href='javascript:sendWhatsapp(852" + phones[i] + ")' class='pure-menu-link'>" + manpowers[i] + "</a></li>";
                 }
-            document.getElementById("emailAddresses").innerHTML = record.fields.同工電郵;
+            document.getElementById("emailAddresses").innerHTML = record.fields.同工電郵 + "," + record.fields.同工電郵FL;
             document.getElementById("emailTitle").innerHTML = "[活動提醒]" + record.fields.活動 + ":" + record.fields.學校名稱 + "(" + d.getDate() + "/" + (d.getMonth()+1) + " " + String(record.fields.開始 - 1200).toHHMM() + "集合)";
             document.getElementById("emailContent").innerHTML =
                 record.fields.人手名稱 + "：" + "\n" + "\n" +
