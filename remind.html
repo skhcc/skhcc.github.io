@@ -52,7 +52,7 @@
             var emails1 = record.fields.同工電郵.split(',');
             var emails2 = record.fields.同工電郵FL.split(',');
             var emails = emails1.concat(emails2);
-            document.getElementById("emailAddresses").innerHTML = emails.join(', ');
+            document.getElementById("emailAddresses").innerHTML = emails.join('\n');
             document.getElementById("emailTitle").innerHTML = "[活動提醒]" + record.fields.活動 + ":" + record.fields.學校名稱 + "(" + d.getDate() + "/" + (d.getMonth()+1) + " " + String(record.fields.開始 - 1200).toHHMM() + "集合)";
             document.getElementById("emailContent").innerHTML =
                 manpowers.join(', ') + "：" + "\n" + "\n" +
