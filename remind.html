@@ -25,7 +25,7 @@
     <script>
         var id = getAllUrlParams().id;
         var Airtable = require('airtable');
-        var base = new Airtable({ apiKey: 'keyZG7bCtLzdH8q6t' }).base('applE6AD7ol0u6YGk');
+        var base = new Airtable({ apiKey: 'keydHmGHfTxwWLpPG' }).base('app1SY4WjR8YlPeao');
         base('活動').find(id, function (err, record) {
             if (err) { console.error(err); return; }
             var manpowers1 = record.fields.人手名稱.split(',');
